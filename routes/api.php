@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BlogController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Website\UserAuthController;
+use App\Http\Controllers\Website\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,21 +15,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
 Route::prefix("v1")->group(function () {
 
     Route::middleware('jwt')->group(function () {
-
-        Route::controller(AuthController::class)->group(function () {
+        Route::controller(UserAuthController::class)->group(function () {
             Route::post('register', "register");
-            Route::get('user-lists', 'showUserLists');
-            Route::get('your-profile', 'yourProfile');
-            Route::put('edit', "edit");
-            Route::get('user-profile/{id}', 'checkUserProfile');
+            Route::put('edit-profile', "editProfile");
             Route::put("change-password", 'changePassword');
             Route::post("logout", 'logout');
         });
+
+        Route::controller(UserController::class)->group(function () {
+            // Route::post('user-profile', "userProfile");
+        });
     });
 
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [UserAuthController::class, 'login']);
+
+    Route::controller(UserController::class)->group(function () {
+        Route::post('user-profile', "userProfile");
+    });
 });
