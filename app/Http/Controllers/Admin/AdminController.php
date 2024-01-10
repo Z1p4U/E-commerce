@@ -7,6 +7,7 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\User\EditProfileRequest;
 use App\Models\Admin;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Lcobucci\JWT\Exception;
@@ -123,6 +124,11 @@ class AdminController extends Controller
             DB::commit();
 
             return $this->success('User password successfully changed', $admin);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'User not found';
+
+            return response()->json(['error' => $errorMessage], 404);
         } catch (Exception $e) {
             DB::rollback();
             return $e;

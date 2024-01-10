@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\CreateAdminRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Models\Admin;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +55,7 @@ class AdminAuthController extends Controller
         } catch (Exception $e) {
             DB::rollback();
 
-            return $e;
+            // return $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -73,6 +74,11 @@ class AdminAuthController extends Controller
             DB::commit();
 
             return $this->success('Admin updated successfully', $admin);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Admin not found';
+
+            return response()->json(['error' => $errorMessage], 404);
         } catch (Exception $e) {
             DB::rollback();
 
@@ -123,6 +129,11 @@ class AdminAuthController extends Controller
             DB::commit();
 
             return $this->success('Admin password successfully changed', $admin);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Admin not found';
+
+            return response()->json(['error' => $errorMessage], 404);
         } catch (Exception $e) {
             DB::rollback();
             return $e;
