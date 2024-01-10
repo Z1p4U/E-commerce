@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TagsController;
 use App\Http\Controllers\Admin\ItemController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ImportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,6 +71,16 @@ Route::prefix("v1")->group(function () {
             Route::delete("delete/{id}", 'destroy');
         });
 
+        Route::controller(ImportController::class)->prefix("import")->group(function () {
+            Route::post("excel", 'ExcelImport');
+            Route::post("csv", 'CsvImport');
+        });
+
+        Route::controller(ExportController::class)->prefix("export")->group(function () {
+            Route::get("excel", 'ExcelExport');
+            Route::get("csv", 'CsvExport');
+        });
+
         Route::middleware('role:super-admin')->group(function () {
             Route::controller(AdminAuthController::class)->prefix("admin-auth")->group(function () {
                 Route::post('create-admin', "createAdmin");
@@ -84,7 +96,6 @@ Route::prefix("v1")->group(function () {
             });
         });
     });
-
 
     Route::post('login', [AdminAuthController::class, 'login']);
 });
