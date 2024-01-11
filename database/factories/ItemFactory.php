@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +17,18 @@ class ItemFactory extends Factory
      */
     public function definition(): array
     {
+
+        $sizes = ["5 ml", "10 ml", "15 ml", "20 ml", "25 ml", "50 ml", "75 ml", "100 ml"];
         return [
-            //
+            'name' => $this->faker->word,
+            "product_id" => rand(1, 100),
+            "sku" => Str::random(10),
+            "size" => $this->faker->randomElement($sizes),
+            "sale" => rand(0, 1),
+            "price" => rand(100000, 500000),
+            "discount_price" => rand(100000, 500000),
+            "description" => fake()->realText(200),
+            "photo" => fake()->realText(10)
         ];
     }
 }

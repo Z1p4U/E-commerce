@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('photos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('admin_id');
             $table->string('url');
             $table->string('name');
             $table->string('extension');
