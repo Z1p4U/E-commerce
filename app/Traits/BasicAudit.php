@@ -27,6 +27,6 @@ trait BasicAudit
 
     public function isSoftDeleteEnabled()
     {
-        return in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this)) && ! $this->forceDeleting;
+        return in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this)) && !$this->forceDeleting;
     }
 }

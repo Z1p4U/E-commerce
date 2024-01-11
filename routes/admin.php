@@ -3,11 +3,14 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TagsController;
 use App\Http\Controllers\Admin\ItemController;
-use App\Http\Controllers\ExportController;
-use App\Http\Controllers\ImportController;
+use App\Http\Controllers\Admin\PhotoController;
+
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,6 +82,19 @@ Route::prefix("v1")->group(function () {
         Route::controller(ExportController::class)->prefix("export")->group(function () {
             Route::get("excel", 'ExcelExport');
             Route::get("csv", 'CsvExport');
+        });
+
+        Route::controller(PhotoController::class)->prefix("photo")->group(function () {
+            Route::get("list", "index");
+            Route::get("show/{id}", "show");
+            Route::post("store", 'store');
+            Route::delete("delete/{id}", 'destroy');
+            Route::post('multiple-delete', 'deleteMultiplePhotos');
+            Route::get("trash", 'trash');
+            Route::patch("deleted-photo/{id}", "deletedPhoto");
+            Route::patch("restore/{id}", "restore");
+            Route::post("force-delete/{id}", "forceDelete");
+            Route::post("clear-trash", "clearTrash");
         });
 
         Route::middleware('role:super-admin')->group(function () {

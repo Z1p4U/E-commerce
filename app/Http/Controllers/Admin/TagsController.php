@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\StoreTagsRequest;
-use App\Http\Requests\UpdateTagsRequest;
+use App\Http\Requests\Admin\StoreTagsRequest;
+use App\Http\Requests\Admin\UpdateTagsRequest;
 use App\Models\Tags;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTagsRequest extends FormRequest
+class UpdateTagsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class StoreTagsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => "required|unique:tags,name",
+            "name" => "required",
             "description" => "nullable",
         ];
     }

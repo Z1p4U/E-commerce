@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Exports\ItemsExport;
 use App\Http\Resources\ItemResource;

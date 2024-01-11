@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\StoreItemRequest;
-use App\Http\Requests\UpdateItemRequest;
+use App\Http\Requests\Admin\StoreItemRequest;
+use App\Http\Requests\Admin\UpdateItemRequest;
 use App\Http\Resources\ItemResource;
 use App\Models\Item;
 use Exception;

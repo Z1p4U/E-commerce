@@ -4,16 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\Controller;
 use App\Http\Requests\Admin\AdminProfileRequest;
-use App\Http\Requests\Admin\ChangeAdminPasswordRequest;
 use App\Http\Requests\Admin\CreateAdminRequest;
-use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Models\Admin;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Lcobucci\JWT\Exception;
 use Tymon\JWTAuth\Facades\JWTAuth;

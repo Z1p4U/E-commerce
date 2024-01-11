@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateItemRequest extends FormRequest
+class UpdateProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,13 +23,8 @@ class UpdateItemRequest extends FormRequest
     {
         return [
             "name" => "required",
-            "product_id" => "required",
-            "sku" => "required",
-            "size" => "required",
-            "sale" => "nullable|boolean",
-            "price" => "required",
-            "discount_price" => "nullable",
-            "description" => "nullable",
+            "short_description" => "required",
+            "description" => "required",
             "photo" => "nullable"
         ];
     }
