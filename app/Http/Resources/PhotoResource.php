@@ -20,7 +20,7 @@ class PhotoResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "url" => asset(Storage::url($this->url)),
-            "user_name" => $this->admin->name,
+            "admin_name" => $this->admin->name,
             "size" => $this->size,
             "created_at" => $this->created_at->format("d M Y"),
             "updated_at" => $this->updated_at->format("d M Y"),
