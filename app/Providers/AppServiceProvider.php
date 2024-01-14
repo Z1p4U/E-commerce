@@ -52,6 +52,10 @@ class AppServiceProvider extends ServiceProvider
             return QueryBuilderHelper::searchQuery($this);
         });
 
+        Builder::macro('itemSearchQuery', function () {
+            return QueryBuilderHelper::itemSearchQuery($this);
+        });
+
         Builder::macro('paginationQuery', function () {
             return QueryBuilderHelper::paginationQuery($this);
         });

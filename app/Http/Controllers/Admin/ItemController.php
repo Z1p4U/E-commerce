@@ -14,7 +14,7 @@ class ItemController extends Controller
 {
     public function index()
     {
-        $item = Item::searchQuery()
+        $item = Item::itemSearchQuery()
             ->sortingQuery()
             ->paginationQuery();
 

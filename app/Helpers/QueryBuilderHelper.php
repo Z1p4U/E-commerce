@@ -44,6 +44,29 @@ class QueryBuilderHelper
         return $builder;
     }
 
+
+    public static function itemSearchQuery(Builder $builder): mixed
+    {
+        $requestQuery = app('request')->query();
+        $search = isset($requestQuery['search']) ? $requestQuery['search'] : null;
+        $columns = isset($requestQuery['columns']) ? $requestQuery['columns'] : null;
+
+        if ($search && $columns) {
+            $columns = explode(',', $columns);
+            $searchableFields = collect($columns);
+
+            return $builder->where(function (Builder $builder) use ($search, $searchableFields) {
+                return $searchableFields->map(function ($field) use ($search, $builder, $searchableFields) {
+                    $method = $searchableFields->first() === $field ? 'where' : 'orWhere';
+
+                    return $builder->{$method}($field, '=', $search);
+                });
+            });
+        }
+
+        return $builder;
+    }
+
     /**
      * @return Builder
      */
