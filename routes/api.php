@@ -17,22 +17,27 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix("v1")->group(function () {
 
-    Route::middleware('jwt')->group(function () {
-        Route::controller(UserAuthController::class)->group(function () {
-            Route::post('register', "register");
-            Route::put('edit-profile', "editProfile");
-            Route::put("change-password", 'changePassword');
-            Route::post("logout", 'logout');
-        });
+    Route::middleware('auth:api')->group(function () {
 
-        Route::controller(UserController::class)->group(function () {
-            // Route::post('user-profile', "userProfile");
+        Route::middleware('jwt')->group(function () {
+
+            Route::controller(UserAuthController::class)->prefix('user-auth')->group(function () {
+                Route::post('register', "register");
+                Route::put('edit-profile', "editProfile");
+                Route::put("change-password", 'changePassword');
+                Route::post("logout", 'logout');
+            });
+
+            Route::controller(UserController::class)->prefix('user')->group(function () {
+                Route::get('profile', "profile");
+                Route::get('user-profile/{id}', "userProfile");
+            });
         });
     });
 
     Route::post('login', [UserAuthController::class, 'login']);
 
-    Route::controller(UserController::class)->group(function () {
-        Route::post('user-profile', "userProfile");
+    Route::controller(UserController::class)->prefix('user')->group(function () {
+        // Route::post('user-profile', "userProfile");
     });
 });

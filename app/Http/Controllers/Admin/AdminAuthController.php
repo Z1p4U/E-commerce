@@ -22,7 +22,7 @@ class AdminAuthController extends Controller
         $payload = collect($request->validated());
 
         try {
-            $token = auth()->attempt($payload->toArray());
+            $token = auth('admin')->attempt($payload->toArray());
 
             if ($token) {
                 return $this->createNewToken($token);
@@ -158,7 +158,8 @@ class AdminAuthController extends Controller
             return $this->success('Admin password successfully changed');
         } catch (Exception $e) {
             DB::rollback();
-            return $e;
+            // return $e;
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -168,8 +169,8 @@ class AdminAuthController extends Controller
         return $this->success('Admin successfully signed in', [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 3600,
-            'admin' => auth()->user(),
+            'expires_in' => auth('admin')->factory()->getTTL() * 3600,
+            'admin' => auth('admin')->user(),
         ]);
     }
 

@@ -1,21 +1,39 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Website\WebController;
-use App\Http\Requests\ChangePasswordRequest;
-
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\User\EditProfileRequest;
 use App\Http\Requests\User\RegisterRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Password;
 use Lcobucci\JWT\Exception;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserAuthController extends WebController
 {
+
+    public function login(LoginRequest $request)
+    {
+        $payload = collect($request->validated());
+
+        try {
+            $token = auth('api')->attempt($payload->toArray());
+
+            if ($token) {
+                return $this->createNewToken($token);
+            } else {
+                return $this->unauthorized();
+            }
+        } catch (Exception $e) {
+            return $e;
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function register(RegisterRequest $request)
     {
@@ -29,7 +47,7 @@ class UserAuthController extends WebController
             $user = User::create($payload->toArray());
             DB::commit();
 
-            return $this->success('User created successfully', $user);
+            return $this->success('User registered successfully', $user);
         } catch (Exception $e) {
             DB::rollback();
 
@@ -65,45 +83,28 @@ class UserAuthController extends WebController
         }
     }
 
-    public function changePassword(ChangePasswordRequest $request, $id)
+    public function changePassword(Request $request)
     {
-        $payload = collect($request->validated());
-        $payload['password'] = bcrypt($payload['password']);
-        $authId = auth()->user()->id;
-
-        if ($authId !== $id) {
-            return $this->unauthenticated('you do not have permission to change password');
-        }
+        $validated = $request->validateWithBag('updatePassword', [
+            'current_password' => ['required', "current_password"],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
 
         DB::beginTransaction();
 
         try {
-            $user = User::findOrFail($id);
-            $user->update($payload->toArray());
+            $request->user()->update([
+                'password' => bcrypt($validated['password']),
+            ]);
+
+            auth()->logout();
+
             DB::commit();
 
-            return $this->success('User is successfully change new password', $user);
+            return $this->success('User password changed successfully');
         } catch (Exception $e) {
             DB::rollback();
 
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function login(LoginRequest $request)
-    {
-        $payload = collect($request->validated());
-
-        try {
-            $token = auth()->attempt($payload->toArray());
-
-            if ($token) {
-                return $this->createNewToken($token);
-            } else {
-                return $this->unauthorized();
-            }
-        } catch (Exception $e) {
-            return $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -121,7 +122,7 @@ class UserAuthController extends WebController
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 3600,
-            'user' => auth()->user(),
+            'user' => auth('api')->user(),
         ]);
     }
 
