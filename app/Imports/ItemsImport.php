@@ -22,6 +22,7 @@ class ItemsImport implements ToModel, ShouldQueue, WithHeadingRow, WithChunkRead
         if ($item) {
             $item->update([
                 'price' => $row['price'],
+                'discount_price' => $row['discount_price'],
             ]);
         }
 

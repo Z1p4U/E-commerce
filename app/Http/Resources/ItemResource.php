@@ -23,6 +23,7 @@ class ItemResource extends JsonResource
             "item_name" => $this->name,
             "size" => $this->size,
             "sale" => $this->sale,
+            'total_stock' => $this->total_stock,
             "price" => $this->price,
             "discount_price" => $this->discount_price,
             'categories' => $this->product->categories->pluck('name')->implode(', '),

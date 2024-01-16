@@ -13,7 +13,7 @@ class ItemSeeder extends Seeder
      */
     public function run(): void
     {
-        $count = 500;
+        $count = 1000;
 
         Item::factory()->count($count)->create();
     }

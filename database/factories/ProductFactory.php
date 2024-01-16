@@ -34,11 +34,11 @@ class ProductFactory extends Factory
     {
         return $this->afterCreating(function (Product $product) {
             // Attach categories
-            $categories = Category::inRandomOrder()->take(4)->pluck('id')->toArray();
+            $categories = Category::inRandomOrder()->take(rand(5, 15))->pluck('id')->toArray();
             $product->categories()->attach($categories);
 
             // Attach tags
-            $tags = Tags::inRandomOrder()->take(4)->pluck('id')->toArray();
+            $tags = Tags::inRandomOrder()->take(rand(5, 15))->pluck('id')->toArray();
             $product->tags()->attach($tags);
         });
     }
