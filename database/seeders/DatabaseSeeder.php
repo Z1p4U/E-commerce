@@ -25,7 +25,9 @@ class DatabaseSeeder extends Seeder
             TagsSeeder::class,
             ProductSeeder::class,
             ItemSeeder::class,
-            StockSeeder::class
+            StockSeeder::class,
+            VoucherSeeder::class,
+            VoucherRecordSeeder::class
         ]);
     }
 }
