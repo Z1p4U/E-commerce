@@ -16,7 +16,7 @@ class ItemController extends Controller
     {
         $item = Item::itemSearchQuery()
             ->sortingQuery()
-            ->paginationQuery();
+            ->itemPaginationQuery();
 
         DB::beginTransaction();
         try {

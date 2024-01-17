@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Website;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreVoucherRecordRequest extends FormRequest
+class EditProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,11 @@ class StoreVoucherRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "voucher_id" => "required",
-            "item_id" => "required",
-            "quantity" => "required"
+            "user_name" => "nullable|min:3|max:30|unique:users,user_name",
+            "name" => "nullable|min:3|max:30|unique:users,name",
+            "phone" => "nullable",
+            "viber" => "nullable",
+            "email" => "email",
         ];
     }
 }

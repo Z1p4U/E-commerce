@@ -83,6 +83,19 @@ class QueryBuilderHelper
         return $builder->get();
     }
 
+    public static function itemPaginationQuery(Builder $builder): mixed
+    {
+        $requestQuery = app('request')->query();
+        $page = isset($requestQuery['page']) ? $requestQuery['page'] : 1;
+        $perPage = isset($requestQuery['per_page']) ? $requestQuery['per_page'] : 5;
+
+        if ($page && $perPage) {
+            return $builder->paginate(perPage: $perPage, page: $page)->appends($requestQuery);
+        }
+
+        return $builder->get();
+    }
+
     /**
      * @return Builder
      */

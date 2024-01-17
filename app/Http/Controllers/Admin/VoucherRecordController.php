@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\StoreVoucherRecordRequest;
-use App\Http\Requests\UpdateVoucherRecordRequest;
 use App\Http\Resources\VoucherResource;
 use App\Models\Item;
 use App\Models\Voucher;

@@ -59,5 +59,9 @@ class AppServiceProvider extends ServiceProvider
         Builder::macro('paginationQuery', function () {
             return QueryBuilderHelper::paginationQuery($this);
         });
+
+        Builder::macro('itemPaginationQuery', function () {
+            return QueryBuilderHelper::itemPaginationQuery($this);
+        });
     }
 }

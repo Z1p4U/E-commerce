@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Website\WebController;
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\User\EditProfileRequest;
-use App\Http\Requests\User\RegisterRequest;
+use App\Http\Requests\Website\EditProfileRequest;
+use App\Http\Requests\Website\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

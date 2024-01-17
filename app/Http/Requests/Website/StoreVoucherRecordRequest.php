@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Website;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreVoucherRequest extends FormRequest
+class StoreVoucherRecordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,9 @@ class StoreVoucherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address' => 'required',
-            'phone' => 'required',
+            "voucher_id" => "required",
+            "item_id" => "required",
+            "quantity" => "required"
         ];
     }
 }

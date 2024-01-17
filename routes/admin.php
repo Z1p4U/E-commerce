@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\TagsController;
 use App\Http\Controllers\Admin\ItemController;
 use App\Http\Controllers\Admin\PhotoController;
 use App\Http\Controllers\Admin\StockController;
+use App\Http\Controllers\Admin\VoucherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -100,6 +101,14 @@ Route::prefix("v1")->group(function () {
                 Route::patch("restore/{id}", "restore");
                 Route::post("force-delete/{id}", "forceDelete");
                 Route::post("clear-trash", "clearTrash");
+            });
+
+            Route::controller(VoucherController::class)->prefix("voucher")->group(function () {
+                Route::get("list", "index");
+                Route::post("today", "todayList");
+                Route::post("store", 'store');
+                Route::get("show/{id}", 'show');
+                Route::delete("delete/{id}", 'destroy');
             });
 
             Route::middleware('role:super-admin')->group(function () {

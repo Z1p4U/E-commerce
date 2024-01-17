@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\StoreVoucherRequest;
-use App\Http\Resources\ItemResource;
-use App\Http\Resources\ProductResource;
 use App\Http\Resources\VoucherResource;
 use App\Models\Voucher;
 use Exception;
@@ -38,34 +36,29 @@ class VoucherController extends Controller
         ], 200);
     }
 
-    public function store(StoreVoucherRequest $request)
+    public function todayList(Request $request)
     {
-        $payload = collect($request->validated());
+        $date = $request->has('date') ? $request->date : now();
 
-        DB::beginTransaction();
-        try {
-            $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            $charactersLength = strlen($characters);
-            $randomString = '';
-            for ($i = 0; $i < 10; $i++) {
-                $randomString .= $characters[rand(0, $charactersLength - 1)];
-            };
+        $dailyVoucher = Voucher::WhereDate('created_at', $date)->get();
+        $totalVoucher = $dailyVoucher->count('id');
+        $total = $dailyVoucher->sum('total');
 
-            $payload['user_id'] = auth('api')->id();
-            $payload['voucher_number'] = $randomString;
-            $total = 0;
-            $payload['total'] = $total;
+        $voucher = Voucher::WhereDate('created_at', $date)->latest("id")
+            ->sortingQuery()
+            ->paginationQuery();
 
-            $voucher = Voucher::create($payload->toArray());
 
-            DB::commit();
+        $data =  VoucherResource::collection($voucher);
 
-            return $this->success('Voucher created successfully', $voucher);
-        } catch (Exception $e) {
-            DB::rollback();
-
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return response()->json([
+            "Voucher Info" => [
+                "date" => $date->format('Y-m-d'),
+                "total_voucher" => $totalVoucher,
+                "total_amount" => $total,
+            ],
+            "data" => $data->resource,
+        ], 200);
     }
 
     public function show(string $id)
