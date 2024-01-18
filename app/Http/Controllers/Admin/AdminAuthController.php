@@ -169,7 +169,7 @@ class AdminAuthController extends Controller
         return $this->success('Admin successfully signed in', [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('admin')->factory()->getTTL() * 3600,
+            'expires_in' => auth('admin')->factory()->getTTL() * 60,
             'admin' => auth('admin')->user(),
         ]);
     }

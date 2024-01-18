@@ -18,7 +18,7 @@ class StockSeeder extends Seeder
         $stocks = [];
 
         for ($i = 1; $i <= 1000; $i++) {
-            $randQuantity = rand(1, 1000);
+            $randQuantity = rand(1, 100);
 
             $stocks[] = [
                 "admin_id" => 1,
@@ -29,7 +29,7 @@ class StockSeeder extends Seeder
             ];
 
             $currentProduct = Item::find($i);
-            $currentProduct->total_stock = $randQuantity;
+            $currentProduct->total_stock += $randQuantity;
             $currentProduct->update();
         }
 

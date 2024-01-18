@@ -18,27 +18,27 @@ class VoucherSeeder extends Seeder
     public function run(): void
     {
         $endDate = Carbon::now();
-        $startDate = Carbon::create(2022, 7, 1);
+        $startDate = Carbon::create(2023, 1, 17);
 
         $period = CarbonPeriod::create($startDate, $endDate);
         $id = 1;
         foreach ($period as $index => $day) {
             $vouchers = [];
-            $voucherCount = random_int(1, 10);
+            $voucherCount = random_int(1, 5);
             for ($i = 1; $i <= $voucherCount; $i++) {
-                $ids = [];
-                $itemId = random_int(1, 10);
-                for ($y = 1; $y <= $itemId; $y++) {
-                    $ids[] = random_int(1, 20);
+                $itemIds = [];
+                $voucherId = random_int(1, 3);
+                for ($y = 1; $y <= $voucherId; $y++) {
+                    $itemIds[] = random_int(1, 1000);
                 }
 
-                $items = Item::whereIn('id', $ids)->get();
+                $items = Item::whereIn('id', $itemIds)->get();
                 $total = 0;
                 $totalActualPrice = 0;
 
                 $records = [];
-                foreach ($ids as $itemId) {
-                    $quantity = random_int(1, 10);
+                foreach ($itemIds as $itemId) {
+                    $quantity = random_int(1, 3);
                     $currentItem = $items->find($itemId);
                     $totalActualPrice += $quantity * $currentItem->price;
                     $total += $quantity * $currentItem->discount_price;

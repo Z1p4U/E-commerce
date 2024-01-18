@@ -12,23 +12,19 @@ use Illuminate\Support\Facades\DB;
 
 class VoucherController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $date = $request->has('date') ? $request->date : now();
-
-        $dailyVoucher = Voucher::WhereDate('created_at', $date)->get();
-        $totalVoucher = $dailyVoucher->count('id');
-        $total = $dailyVoucher->sum('total');
-
-        $voucher = Voucher::WhereDate('created_at', $date)->latest("id")
+        $voucher = Voucher::searchQuery()
             ->sortingQuery()
-            ->paginationQuery();
+            ->paginationQuery();;
 
+        $totalVoucher = $voucher->count('id');
+        $total = $voucher->sum('total');
 
         $data =  VoucherResource::collection($voucher);
 
         return response()->json([
-            "daily_total_sale" => [
+            "all_time" => [
                 "total_voucher" => $totalVoucher,
                 "total" => $total,
             ],
@@ -36,9 +32,9 @@ class VoucherController extends Controller
         ], 200);
     }
 
-    public function todayList(Request $request)
+    public function dailyList(Request $request)
     {
-        $date = $request->has('date') ? $request->date : now();
+        $date = $request->has('date') ? $request->date : now()->format('Y-m-d');
 
         $dailyVoucher = Voucher::WhereDate('created_at', $date)->get();
         $totalVoucher = $dailyVoucher->count('id');
@@ -53,7 +49,7 @@ class VoucherController extends Controller
 
         return response()->json([
             "Voucher Info" => [
-                "date" => $date->format('Y-m-d'),
+                "date" => $date,
                 "total_voucher" => $totalVoucher,
                 "total_amount" => $total,
             ],

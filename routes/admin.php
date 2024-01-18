@@ -105,7 +105,7 @@ Route::prefix("v1")->group(function () {
 
             Route::controller(VoucherController::class)->prefix("voucher")->group(function () {
                 Route::get("list", "index");
-                Route::post("today", "todayList");
+                Route::post("daily", "dailyList");
                 Route::post("store", 'store');
                 Route::get("show/{id}", 'show');
                 Route::delete("delete/{id}", 'destroy');
