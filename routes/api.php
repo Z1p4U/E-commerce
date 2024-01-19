@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Website\CheckoutController;
+use App\Http\Controllers\Website\PasswordController;
 use App\Http\Controllers\Website\UserAuthController;
 use App\Http\Controllers\Website\UserController;
 use App\Http\Controllers\Website\UserVoucherController;
@@ -52,5 +53,10 @@ Route::prefix("v1")->group(function () {
 
     Route::controller(UserAuthController::class)->prefix('user-auth')->group(function () {
         Route::post('register', "register");
+    });
+
+    Route::controller(PasswordController::class)->prefix('password')->group(function () {
+        Route::post('email', "sendResetLinkEmail");
+        Route::post('reset', "reset");
     });
 });
