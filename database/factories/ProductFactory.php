@@ -15,18 +15,21 @@ class ProductFactory extends Factory
 {
     public function definition(): array
     {
-        // $categories = Category::inRandomOrder()->take(4)->pluck('id')->toArray();
-        // $tags = Tags::inRandomOrder()->take(4)->pluck('id')->toArray();
-
-        // $product = Product::get();
-        // $product->categories()->attach($categories);
-        // $product->tags()->attach($tags);
+        $photos = [
+            "https://pebblely.com/ideas/perfume/use-water.jpg",
+            "https://pebblely.com/ideas/perfume/masculinity.jpg",
+            "https://pebblely.com/ideas/perfume/black-white.jpg",
+            "https://pebblely.com/ideas/perfume/use-sunlight.jpg",
+            "https://pebblely.com/ideas/perfume/green.jpg",
+            "https://pebblely.com/ideas/perfume/reflection.jpg",
+            "https://pebblely.com/ideas/perfume/black.jpg",
+        ];
 
         return [
             "name" => $this->faker->word,
             "short_description" => $this->faker->realText(50),
             "description" => $this->faker->realText(100),
-            "photo" => $this->faker->realText(10),
+            "photo" => Arr::random($photos),
         ];
     }
 
