@@ -10,7 +10,7 @@ class Voucher extends Model
 {
     use HasFactory, BasicAudit;
 
-    protected $fillable = ["user_id", "address", "phone", "voucher_number", "total_actual_price", "total"];
+    protected $fillable = ["user_id", "address", "phone", "voucher_number", "total"];
 
 
     public function user()

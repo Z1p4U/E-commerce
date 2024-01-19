@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ItemController;
 use App\Http\Controllers\Admin\PhotoController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\Admin\VoucherRecordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -106,9 +107,12 @@ Route::prefix("v1")->group(function () {
             Route::controller(VoucherController::class)->prefix("voucher")->group(function () {
                 Route::get("list", "index");
                 Route::post("daily", "dailyList");
-                Route::post("store", 'store');
                 Route::get("show/{id}", 'show');
                 Route::delete("delete/{id}", 'destroy');
+            });
+
+            Route::controller(VoucherRecordController::class)->prefix("voucher-record")->group(function () {
+                Route::post("show", "showRecordBasedOnVoucherNumber");
             });
 
             Route::middleware('role:super-admin')->group(function () {

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('voucher_id');
             $table->foreignId('item_id');
             $table->integer('quantity');
-            $table->double('cost');
+            $table->double('cost')->default(0);
             $table->auditColumns();
         });
     }

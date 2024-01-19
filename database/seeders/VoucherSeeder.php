@@ -34,20 +34,18 @@ class VoucherSeeder extends Seeder
 
                 $items = Item::whereIn('id', $itemIds)->get();
                 $total = 0;
-                $totalActualPrice = 0;
 
                 $records = [];
                 foreach ($itemIds as $itemId) {
                     $quantity = random_int(1, 3);
                     $currentItem = $items->find($itemId);
-                    $totalActualPrice += $quantity * $currentItem->price;
-                    $total += $quantity * $currentItem->discount_price;
+                    $total += $quantity * ($currentItem->discount_price ? $currentItem->discount_price : $currentItem->price);
 
                     $records[] = [
                         "voucher_id" => $id,
                         "item_id" => $itemId,
                         "quantity" => $quantity,
-                        "cost" => $quantity * $currentItem->discount_price,
+                        "cost" => $quantity * ($currentItem->discount_price ? $currentItem->discount_price : $currentItem->price),
                         "created_at" => $day,
                         "updated_at" => $day
                     ];
@@ -63,7 +61,6 @@ class VoucherSeeder extends Seeder
                     "voucher_number" => $id,
                     'address' => fake()->address(),
                     'phone' => fake()->phoneNumber(),
-                    "total_actual_price" => $totalActualPrice,
                     "total" => $total,
                     "user_id" => rand(1, 50),
                     "created_at" => $day,

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('phone');
             $table->string('voucher_number');
             $table->integer('total')->default(0);
-            $table->integer('total_actual_price')->default(0);
             $table->auditColumns();
         });
     }

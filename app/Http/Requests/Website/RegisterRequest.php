@@ -22,10 +22,11 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "user_name" => "nullable|min:3|max:30|unique:users,user_name",
-            "name" => "nullable|min:3|max:30|unique:users,name",
-            "phone" => "nullable",
-            "viber" => "nullable",
+            "user_name" => "required|min:3|max:30|unique:users,user_name",
+            "name" => "required|min:3|max:30|unique:users,name",
+            "phone" => "required",
+            "viber" => "required",
+            "address" => "required",
             "email" => "email|required|unique:users",
             "password" => "required|confirmed|min:6",
         ];

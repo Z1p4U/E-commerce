@@ -23,7 +23,6 @@ class VoucherResource extends JsonResource
             'address' => $this->address,
             "phone" => $this->phone,
             "voucher_number" => $this->voucher_number,
-            "total_actual_price" => $this->total_actual_price,
             "total" => $this->total,
             "item_count" => VoucherRecordResource::collection(VoucherRecord::whereDate("created_at", $date)->where('voucher_id', $this->id)->get())->count('id'),
             "records" => VoucherRecordResource::collection(VoucherRecord::whereDate("created_at", $date)->where('voucher_id', $this->id)->get()),

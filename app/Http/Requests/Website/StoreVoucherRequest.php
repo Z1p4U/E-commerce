@@ -22,8 +22,7 @@ class StoreVoucherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address' => 'required',
-            'phone' => 'required',
+            //
         ];
     }
 }

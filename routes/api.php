@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Website\CheckoutController;
 use App\Http\Controllers\Website\UserAuthController;
 use App\Http\Controllers\Website\UserController;
+use App\Http\Controllers\Website\UserVoucherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,7 +24,6 @@ Route::prefix("v1")->group(function () {
         Route::middleware('jwt')->group(function () {
 
             Route::controller(UserAuthController::class)->prefix('user-auth')->group(function () {
-                Route::post('register', "register");
                 Route::put('edit-profile', "editProfile");
                 Route::put("change-password", 'changePassword');
                 Route::post("logout", 'logout');
@@ -32,12 +33,24 @@ Route::prefix("v1")->group(function () {
                 Route::get('profile', "profile");
                 Route::get('user-profile/{id}', "userProfile");
             });
+
+            Route::controller(UserVoucherController::class)->prefix('voucher')->group(function () {
+                Route::get('list', "index");
+                // Route::post('open', "open");
+                Route::get('show/{id}', "show");
+            });
+
+            Route::controller(CheckoutController::class)->prefix('check-out')->group(function () {
+                Route::post('purchase', "purchase");
+                // Route::post('single-item-checkout/{id}', "singleItemCheckOut"); // for who don't want add to cart function. Just select Item Id and provide quantity
+
+            });
         });
     });
 
     Route::post('login', [UserAuthController::class, 'login']);
 
-    Route::controller(UserController::class)->prefix('user')->group(function () {
-        // Route::post('user-profile', "userProfile");
+    Route::controller(UserAuthController::class)->prefix('user-auth')->group(function () {
+        Route::post('register', "register");
     });
 });
