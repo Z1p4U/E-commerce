@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Website;
 use App\Mail\CustomResetPasswordMail;
 use App\Models\PasswordReset;
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset as EventsPasswordReset;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
@@ -25,65 +27,61 @@ class PasswordController extends WebController
             return $this->notFound('Email not found');
         }
 
-        // Generate 6-digit code
+        // Generate 6-digit token
         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $charactersLength = strlen($characters);
-        $code = '';
+        $token = '';
         for ($i = 0; $i <= 6; $i++) {
-            $code .= $characters[rand(0, $charactersLength - 1)];
+            $token .= $characters[rand(0, $charactersLength - 1)];
         }
 
-        // Store code in password_resets table
+        // Store token in password_resets table
         PasswordReset::updateOrCreate(
             ['email' => $user->email],
-            ['token' => Hash::make($code), 'created_at' => now()]
+            ['token' => $token, 'created_at' => now()],
         );
 
         // Send password reset email
         $expiration = 10;
-        $user->sendPasswordResetNotification($code, $userName, $expiration);
+        $user->sendPasswordResetNotification($token, $userName, $expiration);
 
-        return $this->success('Password reset code has been sent to provided email.');
+        return $this->success('Password reset token has been sent to provided email.');
     }
 
 
-    public function reset(Request $request)
+    public function resetPassword(Request $request)
     {
-        // Check if code is valid and not expired
-        $passwordReset = PasswordReset::where('email', $request->email)->first();
-        $expiresAt = now()->subMinutes(10);
+        $request->validate([
+            'token' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
 
-        if (is_null($passwordReset) || !Hash::check($request->code, $passwordReset->token)) {
-            return $this->validationError("Invalid Code", null);
-        }
-        if ($passwordReset->created_at < $expiresAt) {
-            return $this->validationError("Code expired", null);
-        }
+        $token = $request->input('token');
+        $password = $request->input('password');
 
-        // Use the Password facade to reset the password
-        $response = Password::broker()->reset(
-            $this->credentials($request),
-            function ($user, $password) {
-                $this->resetPassword($user, $password);
-            }
-        );
+        $resetRecord = PasswordReset::where('token', $token)->first();
 
-        // Handle the response from the password broker (e.g., show success or error message)
-        if ($response == Password::PASSWORD_RESET) {
-            // Password reset was successful
-            return $this->success(trans($response));
-        } else {
-            // Password reset failed
-            return $this->validationError(trans($response), null);
+        if (!$resetRecord) {
+            return response()->json(['error' => 'Invalid reset code'], 404);
         }
 
+        // Check if the reset token is expired
+        $createdAt = strtotime($resetRecord->created_at);
+        $expiresAt = $createdAt + (10 * 60); // 10 minutes expiration time
+        $now = time();
 
-        // Delete the password reset record
-        $passwordReset->delete();
+        if ($now > $expiresAt) {
+            return response()->json(['error' => 'Reset token has expired'], 422);
+        }
 
-        // Return a JSON response based on the password reset status
-        return $response == Password::PASSWORD_RESET
-            ? response()->json(['message' => trans($response)])
-            : response()->json(['message' => trans($response)], 422);
+        // Update the user's password
+        $user = User::where("email", $resetRecord->email)->first();
+        $user->password = Hash::make($password);
+        $user->save();
+
+        // Delete the reset token record
+        DB::table('password_resets')->where('token', $token)->delete();
+
+        return response()->json(['message' => 'Password has been reset successfully']);
     }
 }

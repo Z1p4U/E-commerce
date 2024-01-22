@@ -57,6 +57,6 @@ Route::prefix("v1")->group(function () {
 
     Route::controller(PasswordController::class)->prefix('password')->group(function () {
         Route::post('email', "sendResetLinkEmail");
-        Route::post('reset', "reset");
+        Route::post('reset', "resetPassword");
     });
 });

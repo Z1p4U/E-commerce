@@ -27,7 +27,7 @@ class RegisterRequest extends FormRequest
             "phone" => "required",
             "viber" => "required",
             "address" => "required",
-            "email" => "email|required|unique:users",
+            "email" => "email|required|unique:users,email",
             "password" => "required|confirmed|min:6",
         ];
     }

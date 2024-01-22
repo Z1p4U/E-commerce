@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             "phone" => "09999999999",
             "viber" => "09999999999",
             'address' => fake()->address(),
-            "email" => "user@gmail.com",
+            "email" => "thantzinhtet2001@gmail.com",
             "password" => Hash::make("asdffdsa"),
         ]);
 
