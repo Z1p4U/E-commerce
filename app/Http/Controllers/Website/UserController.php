@@ -9,15 +9,19 @@ class UserController extends WebController
 {
     public function profile()
     {
-        $profile = User::where("id", Auth::id())->latest("id")->get();
-
+        $profile = User::find(Auth::id());
+        if (!$profile) {
+            return $this->notFound("User not found");
+        }
         return $this->success("Your Profile", $profile);
     }
 
     public function userProfile(string $id)
     {
-        $profile = User::where("id", $id)->latest("id")->get();
-
+        $profile = User::find($id);
+        if (!$profile) {
+            return $this->notFound("User not found");
+        }
         return $this->success("User Profile", $profile);
     }
 }

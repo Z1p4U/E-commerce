@@ -10,6 +10,7 @@ use Attribute;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UserVoucherController extends WebController
@@ -20,7 +21,7 @@ class UserVoucherController extends WebController
         $voucher = Voucher::where('user_id', $userId)
             ->searchQuery()
             ->sortingQuery()
-            ->paginationQuery();;
+            ->paginationQuery();
 
         $totalVoucher = $voucher->count('id');
         $total = $voucher->sum('total');
@@ -42,6 +43,10 @@ class UserVoucherController extends WebController
 
         try {
             $voucher = Voucher::findOrFail($id);
+
+            if ($voucher->user_id != Auth::id()) {
+                return $this->unauthorized("Not your voucher.");
+            }
 
             $voucherResource = new VoucherResource($voucher);
 

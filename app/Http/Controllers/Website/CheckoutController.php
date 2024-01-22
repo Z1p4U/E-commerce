@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Http\Requests\Website\PurchaseRequest;
 use App\Http\Requests\Website\StoreVoucherRecordRequest;
+use App\Http\Resources\CheckoutResource;
+use App\Http\Resources\PhotoDetailResource;
 use App\Http\Resources\VoucherResource;
+use App\Models\Checkout;
 use App\Models\Item;
+use App\Models\Product;
+use App\Models\User;
 use App\Models\Voucher;
 use App\Models\VoucherRecord;
 use Illuminate\Http\Request;
@@ -12,10 +18,11 @@ use App\Rules\CheckItemQuantity;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CheckoutController extends WebController
 {
-    public function purchase(Request $request)
+    public function addToCart(Request $request)
     {
         try {
             DB::beginTransaction();
@@ -28,7 +35,6 @@ class CheckoutController extends WebController
             $total = 0;
 
             foreach ($request->items as $item) {
-
                 $currentItem = $itemList->find($item["item_id"]);
                 if (is_null($currentItem)) {
                     return $this->notFound('There is no Item.');
@@ -53,11 +59,9 @@ class CheckoutController extends WebController
             ]);
 
             $records = [];
-
             $request->validate([
                 'items' => ['required', 'array', new CheckItemQuantity]
             ]);
-
             foreach ($request->items as $item) {
 
                 $currentItem = $itemList->find($item["item_id"]);
@@ -76,9 +80,6 @@ class CheckoutController extends WebController
             }
 
             $voucherRecords = VoucherRecord::insert($records); // use database
-            // dd($voucherRecords);
-            // return $request;
-
             DB::commit();
             return response()->json([
                 'message' => 'Checkout successfully',
@@ -87,6 +88,44 @@ class CheckoutController extends WebController
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['message' => 'Transaction failed.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function purchase(PurchaseRequest $request, $id)
+    {
+        $payload = collect($request->validated());
+
+        DB::beginTransaction();
+
+        try {
+            $user = auth('api')->user();
+            $userId = auth('api')->id();
+            $voucher = Voucher::findOrFail($id);
+            if ($voucher->user_id != $user->id) {
+                return $this->unauthorized("Not your voucher.");
+            }
+
+            $photo = $request->file('photo');
+            $savedPhoto = $photo->store("public/user/photo");
+
+            $payload['voucher_id'] = $voucher->id;
+            $payload['user_id'] = $userId;
+            $payload['photo'] = $savedPhoto;
+
+            $checkout = Checkout::create($payload->toArray());
+
+            $checkoutResource = new CheckoutResource($checkout);
+
+            DB::commit();
+
+            return $this->success('Purchased successfully', $checkoutResource);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Voucher not found';
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 

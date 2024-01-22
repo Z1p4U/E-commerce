@@ -52,7 +52,7 @@ class PhotoController extends Controller
                 foreach ($photos as $photo) {
                     $fileSize = $photo->getSize();
                     $name = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-                    $savedPhoto = $photo->store("public/photo");
+                    $savedPhoto = $photo->store("public/admin/photo");
                     $savedPhotos[] = [
                         "url" => $savedPhoto,
                         "name" => $name,

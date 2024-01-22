@@ -27,4 +27,9 @@ class Voucher extends Model
     {
         return $this->belongsToMany(Item::class, VoucherRecord::class);
     }
+
+    public function checkout()
+    {
+        return $this->hasMany(Checkout::class);
+    }
 }
