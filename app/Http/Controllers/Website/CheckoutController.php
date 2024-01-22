@@ -106,7 +106,7 @@ class CheckoutController extends WebController
             }
 
             $photo = $request->file('photo');
-            $savedPhoto = $photo->store("public/user/photo");
+            $savedPhoto = $photo->store("public/photo/user");
 
             $payload['voucher_id'] = $voucher->id;
             $payload['user_id'] = $userId;
