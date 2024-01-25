@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class QueryBuilderHelper
 {
-    /**
-     * @return Builder
-     */
     public static function sortingQuery(Builder $builder): mixed
     {
         $requestQuery = app('request')->query();
@@ -44,7 +41,6 @@ class QueryBuilderHelper
         return $builder;
     }
 
-
     public static function itemSearchQuery(Builder $builder): mixed
     {
         $requestQuery = app('request')->query();
@@ -58,8 +54,9 @@ class QueryBuilderHelper
             return $builder->where(function (Builder $builder) use ($search, $searchableFields) {
                 return $searchableFields->map(function ($field) use ($search, $builder, $searchableFields) {
                     $method = $searchableFields->first() === $field ? 'where' : 'orWhere';
+                    $operator = $field === 'product_id' ? '=' : 'LIKE';
 
-                    return $builder->{$method}($field, '=', $search);
+                    return $builder->{$method}($field, $operator, $field === 'product_id' ? $search : "%$search%");
                 });
             });
         }
@@ -67,9 +64,6 @@ class QueryBuilderHelper
         return $builder;
     }
 
-    /**
-     * @return Builder
-     */
     public static function paginationQuery(Builder $builder): mixed
     {
         $requestQuery = app('request')->query();
@@ -96,9 +90,6 @@ class QueryBuilderHelper
         return $builder->get();
     }
 
-    /**
-     * @return Builder
-     */
     public static function filterQuery(Builder $builder): mixed
     {
         $requestQuery = app('request')->query();
