@@ -45,7 +45,6 @@ Route::prefix("v1")->group(function () {
                 Route::post('purchase/{id}', "purchase");
                 Route::post('add-to-cart', "addToCart");
                 // Route::post('single-item-checkout/{id}', "singleItemCheckOut"); // for who don't want add to cart function. Just select Item Id and provide quantity
-
             });
         });
     });

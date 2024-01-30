@@ -16,9 +16,6 @@ class QueryBuilderHelper
         return $builder->orderBy($order, $sort);
     }
 
-    /**
-     * id,name,email
-     */
     public static function searchQuery(Builder $builder): mixed
     {
         $requestQuery = app('request')->query();
@@ -41,6 +38,7 @@ class QueryBuilderHelper
         return $builder;
     }
 
+    // "=" for product_id | "like" for others
     public static function itemSearchQuery(Builder $builder): mixed
     {
         $requestQuery = app('request')->query();
@@ -77,6 +75,7 @@ class QueryBuilderHelper
         return $builder->get();
     }
 
+    // page = 1 & per_page = 10 by default
     public static function itemPaginationQuery(Builder $builder): mixed
     {
         $requestQuery = app('request')->query();
