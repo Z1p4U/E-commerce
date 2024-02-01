@@ -21,12 +21,12 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             AdminSeeder::class,
             UserSeeder::class,
-            CategorySeeder::class,
-            TagsSeeder::class,
-            ProductSeeder::class,
-            ItemSeeder::class,
-            StockSeeder::class,
-            VoucherSeeder::class,
+            // CategorySeeder::class,
+            // TagsSeeder::class,
+            // ProductSeeder::class,
+            // ItemSeeder::class,
+            // StockSeeder::class,
+            // VoucherSeeder::class,
             PhotoSeeder::class,
         ]);
     }
