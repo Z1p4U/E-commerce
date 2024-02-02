@@ -30,7 +30,7 @@ class UserAuthController extends WebController
                 return $this->unauthorized();
             }
         } catch (Exception $e) {
-            return $e;
+            // return $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -51,7 +51,7 @@ class UserAuthController extends WebController
         } catch (Exception $e) {
             DB::rollback();
 
-            return $e;
+            // return $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -78,7 +78,7 @@ class UserAuthController extends WebController
         } catch (Exception $e) {
             DB::rollback();
 
-            return $e;
+            // return $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

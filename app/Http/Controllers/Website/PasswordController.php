@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Website;
 
 use App\Models\PasswordReset;
 use App\Models\User;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class PasswordController extends WebController
@@ -14,38 +17,48 @@ class PasswordController extends WebController
     {
         $request->validate(['email' => 'required|email']);
 
-        // Fetch the user
-        $user = User::where('email', $request->email)->first();
+        try {
+            // Fetch the user
+            $user = User::where('email', $request->email)->firstOrFail();
 
-        if (is_null($user)) {
-            return $this->notFound('Email not found');
+            if (is_null($user)) {
+                return $this->notFound('Email not found');
+            }
+
+            // Generate 6-digit token
+            $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            $charactersLength = strlen($characters);
+            $token = '';
+            for ($i = 0; $i < 6; $i++) {
+                $token .= $characters[rand(0, $charactersLength - 1)];
+            }
+            // Hash the token
+            // $hashedToken = bcrypt($token);
+
+            // Store token in password_resets table
+            PasswordReset::updateOrCreate(
+                ['email' => $user->email],
+                [
+                    'token' => $token,
+                    'created_at' => now()
+                ]
+            );
+
+            // Send password reset email
+            $expiration = 10; // Assuming this is the expiration time in minutes
+            $user->sendPasswordResetNotification($token, $user->name, $expiration);
+
+            return $this->success('Password reset token has been sent to the provided email.');
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Email not found';
+
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+
+            // return $e;
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        // Generate 6-digit token
-        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $charactersLength = strlen($characters);
-        $token = '';
-        for ($i = 0; $i < 6; $i++) {
-            $token .= $characters[rand(0, $charactersLength - 1)];
-        }
-
-        // Hash the token
-        // $hashedToken = bcrypt($token);
-
-        // Store token in password_resets table
-        PasswordReset::updateOrCreate(
-            ['email' => $user->email],
-            [
-                'token' => $token,
-                'created_at' => now()
-            ]
-        );
-
-        // Send password reset email
-        $expiration = 10; // Assuming this is the expiration time in minutes
-        $user->sendPasswordResetNotification($token, $user->name, $expiration);
-
-        return $this->success('Password reset token has been sent to the provided email.');
     }
 
     public function resetPassword(Request $request)
