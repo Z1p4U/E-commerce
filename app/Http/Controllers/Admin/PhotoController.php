@@ -151,6 +151,7 @@ class PhotoController extends Controller
     public function trash()
     {
         $softDeletedPhotos = Photo::onlyTrashed()
+            ->latest("id")
             ->searchQuery()
             ->sortingQuery()
             ->paginationQuery();

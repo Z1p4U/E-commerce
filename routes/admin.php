@@ -98,17 +98,15 @@ Route::prefix("v1")->group(function () {
                 Route::delete("delete/{id}", 'destroy');
                 Route::post('multiple-delete', 'deleteMultiplePhotos');
                 Route::get("trash", 'trash');
-                Route::patch("deleted-photo/{id}", "deletedPhoto");
+                Route::get("deleted-photo/{id}", "deletedPhoto");
                 Route::patch("restore/{id}", "restore");
                 Route::post("force-delete/{id}", "forceDelete");
                 Route::post("clear-trash", "clearTrash");
             });
 
             Route::controller(VoucherController::class)->prefix("voucher")->group(function () {
-                Route::get("list", "index");
-                Route::post("daily", "dailyList");
+                Route::post("list", "index");
                 Route::get("show/{id}", 'show');
-                Route::delete("delete/{id}", 'destroy');
             });
 
             Route::controller(VoucherRecordController::class)->prefix("voucher-record")->group(function () {
