@@ -39,6 +39,32 @@ class VoucherController extends Controller
         $dailyVoucher = Voucher::WhereDate('created_at', $date)->get();
         $totalVoucher = $dailyVoucher->count('id');
         $total = $dailyVoucher->sum('total');
+        $totalItems = $dailyVoucher->sum('total_items');
+
+        $voucher = Voucher::WhereDate('created_at', $date)->latest("id")
+            ->sortingQuery()
+            ->paginationQuery();
+
+        $data =  VoucherResource::collection($voucher);
+
+        return response()->json([
+            "Voucher Info" => [
+                "date" => $date,
+                "total_voucher" => $totalVoucher,
+                "total_item" => $totalItems,
+                "total_amount" => $total,
+            ],
+            "data" => $data->resource,
+        ], 200);
+    }
+
+    public function monthlyList(Request $request)
+    {
+        $date = $request->has('date') ? $request->date : now()->format('Y-m-d');
+
+        $dailyVoucher = Voucher::WhereDate('created_at', $date)->get();
+        $totalVoucher = $dailyVoucher->count('id');
+        $total = $dailyVoucher->sum('total');
 
         $voucher = Voucher::WhereDate('created_at', $date)->latest("id")
             ->sortingQuery()

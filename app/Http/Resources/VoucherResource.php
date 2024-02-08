@@ -16,6 +16,7 @@ class VoucherResource extends JsonResource
     public function toArray(Request $request): array
     {
         $date = $request->has('date') ? $request->date : $this->created_at;
+        $voucherRecord = VoucherRecordResource::collection(VoucherRecord::whereDate("created_at", $date)->where('voucher_id', $this->id)->get());
 
         return [
             "id" => $this->id,
@@ -23,9 +24,10 @@ class VoucherResource extends JsonResource
             'address' => $this->address,
             "phone" => $this->phone,
             "voucher_number" => $this->voucher_number,
+            "total_items" => $voucherRecord->sum("quantity"),
             "total" => $this->total,
-            "item_count" => VoucherRecordResource::collection(VoucherRecord::whereDate("created_at", $date)->where('voucher_id', $this->id)->get())->count('id'),
-            "records" => VoucherRecordResource::collection(VoucherRecord::whereDate("created_at", $date)->where('voucher_id', $this->id)->get()),
+            "record_count" => $voucherRecord->count('id'),
+            "records" => $voucherRecord,
             "created_at" => $this->created_at->format("d M Y"),
             "created_time" => $this->created_at->format("h:m A"),
         ];

@@ -37,7 +37,6 @@ Route::prefix("v1")->group(function () {
 
             Route::controller(UserVoucherController::class)->prefix('voucher')->group(function () {
                 Route::get('list', "index");
-                // Route::post('open', "open");
                 Route::get('show/{id}', "show");
             });
 

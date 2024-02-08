@@ -17,6 +17,7 @@ return new class extends Migration
             $table->longText('address');
             $table->string('phone');
             $table->string('voucher_number');
+            $table->integer('total_items')->default(0);
             $table->integer('total')->default(0);
             $table->auditColumns();
         });

@@ -21,7 +21,7 @@ class VoucherSeeder extends Seeder
         $startDate = Carbon::create(2023, 1, 17);
 
         $period = CarbonPeriod::create($startDate, $endDate);
-        $id = 1;
+        $id = 0000000001;
         foreach ($period as $index => $day) {
             $vouchers = [];
             $voucherCount = random_int(1, 5);
@@ -33,12 +33,14 @@ class VoucherSeeder extends Seeder
                 }
 
                 $items = Item::whereIn('id', $itemIds)->get();
+                $totalItems = 0;
                 $total = 0;
 
                 $records = [];
                 foreach ($itemIds as $itemId) {
                     $quantity = random_int(1, 3);
                     $currentItem = $items->find($itemId);
+                    $totalItems += $quantity;
                     $total += $quantity * ($currentItem->discount_price ? $currentItem->discount_price : $currentItem->price);
 
                     $records[] = [
@@ -61,6 +63,7 @@ class VoucherSeeder extends Seeder
                     "voucher_number" => $id,
                     'address' => fake()->address(),
                     'phone' => fake()->phoneNumber(),
+                    "total_items" => $totalItems,
                     "total" => $total,
                     "user_id" => rand(1, 50),
                     "created_at" => $day,
