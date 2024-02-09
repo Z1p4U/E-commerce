@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId("voucher_id")->constrained()->cascadeOnDelete();
             $table->foreignId("user_id")->constrained()->cascadeOnDelete();
             $table->string('photo');
+            $table->enum('status', ['Accepted', 'Pending', 'Denied'])->default('Pending');
             $table->auditColumns();
         });
     }

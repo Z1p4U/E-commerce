@@ -18,15 +18,11 @@ class ItemController extends Controller
             ->sortingQuery()
             ->itemPaginationQuery();
 
-        DB::beginTransaction();
         try {
-
             $itemResource = ItemResource::collection($item);
-            DB::commit();
 
             return $this->success("Item List", $item);
         } catch (Exception $e) {
-            DB::rollback();
             // throw $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }

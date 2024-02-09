@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->longText('address');
             $table->string('phone');
-            $table->string('voucher_number');
+            $table->string('voucher_number')->unique();
             $table->integer('total_items')->default(0);
             $table->integer('total')->default(0);
             $table->auditColumns();

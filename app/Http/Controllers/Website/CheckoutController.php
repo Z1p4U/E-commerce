@@ -9,8 +9,6 @@ use App\Http\Resources\PhotoDetailResource;
 use App\Http\Resources\VoucherResource;
 use App\Models\Checkout;
 use App\Models\Item;
-use App\Models\Product;
-use App\Models\User;
 use App\Models\Voucher;
 use App\Models\VoucherRecord;
 use Illuminate\Http\Request;
@@ -18,7 +16,6 @@ use App\Rules\CheckItemQuantity;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class CheckoutController extends WebController
 {
@@ -33,6 +30,7 @@ class CheckoutController extends WebController
             $itemIds = collect($request->items)->pluck("item_id");
             $itemList = Item::whereIn("id", $itemIds)->get(); // searching items
             $total = 0;
+            $totalItem = 0;
 
             foreach ($request->items as $item) {
                 $currentItem = $itemList->find($item["item_id"]);
@@ -41,22 +39,37 @@ class CheckoutController extends WebController
                 }
 
                 $total += $item["quantity"] * ($currentItem->discount_price ? $currentItem->discount_price : $currentItem->price);
+                $totalItem += $item["quantity"];
             }
 
             //creating voucher
-            $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            $charactersLength = strlen($characters);
-            $randomString = '';
-            for ($i = 0; $i < 8; $i++) {
-                $randomString .= $characters[rand(0, $charactersLength - 1)];
-            }
-            $voucher = Voucher::create([
-                "voucher_number" => $randomString,
-                'address' => $user->address,
-                'phone' => $user->phone,
-                "total" => $total,
-                "user_id" => $userId,
-            ]);
+            // $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            // $charactersLength = strlen($characters);
+            // $randomString = '';
+            // for ($i = 0; $i < 8; $i++) {
+            //     $randomString .= $characters[rand(0, $charactersLength - 1)];
+            // }
+
+            // $voucher = Voucher::create([
+            //     "voucher_number" => $randomString,
+            //     'address' => $user->address,
+            //     'phone' => $user->phone,
+            //     "total_items" => $totalItem,
+            //     "total" => $total,
+            //     "user_id" => $userId,
+            // ]);
+
+            $voucher = new Voucher();
+            $uniqueVoucherNumber = $voucher->generateRandomNumber(Voucher::class, "created_at", 10);
+
+            $voucher->address = $user->address;
+            $voucher->phone = $user->phone;
+            $voucher->total_items = $totalItem;
+            $voucher->total = $total;
+            $voucher->user_id = $userId;
+            $voucher->voucher_number = $uniqueVoucherNumber;
+
+            $voucher->save();
 
             $records = [];
             $request->validate([
@@ -79,15 +92,20 @@ class CheckoutController extends WebController
                 ]);
             }
 
-            $voucherRecords = VoucherRecord::insert($records); // use database
+            VoucherRecord::insert($records); // use database
+
             DB::commit();
-            return response()->json([
-                'message' => 'Checkout successfully',
-                "data" => new VoucherResource($voucher)
-            ]);
+
+            return $this->success("Checkout successfully", new VoucherResource($voucher));
+
+            // return response()->json([
+            //     'message' => 'Checkout successfully',
+            //     "data" => new VoucherResource($voucher)
+            // ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['message' => 'Transaction failed.', 'error' => $e->getMessage()], 500);
+            // return response()->json(['message' => 'Transaction failed.', 'error' => $e->getMessage()], 500);
+            return $this->validationError('Transaction failed.', $e->getMessage());
         }
     }
 
@@ -125,6 +143,43 @@ class CheckoutController extends WebController
             return response()->json(['error' => $errorMessage], 404);
         } catch (Exception $e) {
             DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function purchaseRequestList()
+    {
+        $userId = auth('api')->id();
+        $checkout = Checkout::where('user_id', $userId)
+            ->searchQuery()
+            ->sortingQuery()
+            ->paginationQuery();
+
+        try {
+            $checkoutResource = CheckoutResource::collection($checkout);
+
+            return $this->success("Purchased List", $checkout);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function purchaseRequest($id)
+    {
+        $userId = auth('api')->id();
+        try {
+            $checkout = Checkout::findOrFail($id);
+            if ($checkout->user_id != $userId) {
+                return $this->unauthorized("Not yours.");
+            }
+
+            $checkoutResource = new CheckoutResource($checkout);
+
+            return $this->success("Purchased Request", $checkoutResource);
+        } catch (ModelNotFoundException $e) {
+            $errorMessage = 'Request not found';
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

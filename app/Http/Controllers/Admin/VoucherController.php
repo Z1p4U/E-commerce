@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 class VoucherController extends Controller
@@ -16,7 +17,7 @@ class VoucherController extends Controller
     public function index(Request $request)
     {
         $type = $request->input('type', default: 'daily');
-        $date = $request->input('date', now()->format('Y-m-d'));
+        $date = $request->has('date') ? $request->date : now()->format('Y-m-d');
 
         DB::beginTransaction();
 
@@ -41,8 +42,9 @@ class VoucherController extends Controller
                     break;
             }
 
-            $vouchers = Voucher::whereBetween('created_at', [$startDate, $endDate])
-                ->latest("id")
+            $vouchers = Voucher::whereDate('created_at', '>=', $startDate)
+                ->whereDate('created_at', '<=', $endDate)
+                ->latest('id')
                 ->sortingQuery()
                 ->paginationQuery();
 

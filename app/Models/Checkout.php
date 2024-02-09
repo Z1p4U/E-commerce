@@ -10,7 +10,7 @@ class Checkout extends Model
 {
     use HasFactory, BasicAudit;
 
-    public $fillable = ["user_id", "voucher_id", "photo"];
+    public $fillable = ["user_id", "voucher_id", "photo", "status"];
 
     public function voucher()
     {

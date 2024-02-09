@@ -18,6 +18,8 @@ class CheckoutResource extends JsonResource
     {
         $voucher = Voucher::where("id", $this->voucher_id)->get();
         return [
+            "id" => $this->id,
+            "status" => $this->status,
             "voucher" => VoucherResource::collection($voucher),
             "photo" => asset(Storage::url($this->photo)),
         ];

@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CheckoutRequestController;
+use App\Http\Controllers\Admin\CheckoutStatusController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ProductController;
@@ -111,6 +113,11 @@ Route::prefix("v1")->group(function () {
 
             Route::controller(VoucherRecordController::class)->prefix("voucher-record")->group(function () {
                 Route::post("show", "showRecordBasedOnVoucherNumber");
+            });
+
+            Route::controller(CheckoutRequestController::class)->prefix("checkout-request")->group(function () {
+                Route::get("list", "index");
+                Route::get("show/{id}", "show");
             });
 
             Route::middleware('role:super-admin')->group(function () {
