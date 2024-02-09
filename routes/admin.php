@@ -118,6 +118,7 @@ Route::prefix("v1")->group(function () {
             Route::controller(CheckoutRequestController::class)->prefix("checkout-request")->group(function () {
                 Route::get("list", "index");
                 Route::get("show/{id}", "show");
+                Route::put("interact/{id}", "interact");
             });
 
             Route::middleware('role:super-admin')->group(function () {

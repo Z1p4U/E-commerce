@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('checkouts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("voucher_id")->constrained()->cascadeOnDelete();
-            $table->foreignId("user_id")->constrained()->cascadeOnDelete();
+            $table->foreignId("voucher_id");
+            $table->foreignId("user_id");
             $table->string('photo');
-            $table->enum('status', ['Accepted', 'Pending', 'Denied'])->default('Pending');
+            $table->enum('status', ['Approved', 'Pending', 'Denied'])->default('Pending');
             $table->auditColumns();
         });
     }

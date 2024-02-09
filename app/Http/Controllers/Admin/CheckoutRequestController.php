@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\CheckoutRequest;
 use App\Http\Resources\CheckoutResource;
 use App\Models\Checkout;
 use Exception;
@@ -17,16 +18,12 @@ class CheckoutRequestController extends Controller
             ->sortingQuery()
             ->paginationQuery();
 
-        DB::beginTransaction();
         try {
-
             $checkoutRequestResource = CheckoutResource::collection($checkoutRequest);
-            DB::commit();
 
             return $this->success("Checkout Request List", $checkoutRequest);
         } catch (Exception $e) {
             DB::rollback();
-            // throw $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -46,6 +43,34 @@ class CheckoutRequestController extends Controller
         } catch (ModelNotFoundException $e) {
             DB::rollback();
             $errorMessage = 'Checkout Request not found';
+
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function interact(CheckoutRequest $request, $id)
+    {
+        $payload = collect($request->validated());
+
+        DB::beginTransaction();
+        try {
+            $checkoutRequest = Checkout::findOrFail($id);
+
+            if ($checkoutRequest->status != "Pending") {
+                return $this->unauthorized('This request has already approved or denied.');
+            }
+
+            $checkoutRequest->update($payload->toArray());
+
+            DB::commit();
+            return $this->success($checkoutRequest->status . " Successfully!", $checkoutRequest);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Request not found';
 
             return response()->json(['error' => $errorMessage], 404);
         } catch (Exception $e) {
