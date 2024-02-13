@@ -123,6 +123,8 @@ class AdminAuthController extends Controller
             $admin = Admin::findOrFail($id);
             $admin->update(['password' => bcrypt($validated['password'])]);
 
+            // $admin->tokens()->delete();
+
             DB::commit();
 
             return $this->success('Admin password successfully changed', $admin);

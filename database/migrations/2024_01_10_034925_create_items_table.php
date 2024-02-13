@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId("product_id")->constrained()->cascadeOnDelete();
             $table->string("size");
             $table->boolean('sale')->nullable()->default(0);
-            $table->integer('total_stock')->default(0);
+            $table->integer('total_stock')->nullable()->default(0);
             $table->string("price");
             $table->string("discount_price")->nullable();
             $table->longText("description")->nullable();

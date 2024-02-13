@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\Controller;
-use App\Http\Requests\ChangePasswordRequest;
-use App\Http\Requests\User\EditProfileRequest;
+use App\Http\Requests\Website\EditProfileRequest;
 use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Password;
 use Lcobucci\JWT\Exception;
+use Laravel\Passport\Token;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminController extends Controller
 {
@@ -109,30 +112,39 @@ class AdminController extends Controller
         }
     }
 
-    public function changeUserPassword(ChangePasswordRequest $request, $id)
+    public function changeUserPassword(Request $request, $id)
     {
-        $payload = collect($request->validated());
-        $payload['password'] = bcrypt($payload['password']);
+        $validated = $request->validateWithBag('updatePassword', [
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
 
         DB::beginTransaction();
 
         try {
-            $admin = User::findOrFail($id);
+            $user = User::findOrFail($id);
 
-            $admin->update($payload->toArray());
+            $user->update(['password' => bcrypt($validated['password'])]);
 
             DB::commit();
 
-            return $this->success('User password successfully changed', $admin);
+            return $this->success('User password successfully changed', $user);
         } catch (ModelNotFoundException $e) {
             DB::rollback();
             $errorMessage = 'User not found';
-
             return response()->json(['error' => $errorMessage], 404);
         } catch (Exception $e) {
             DB::rollback();
             return $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function refreshToken()
+    {
+        $token = JWTAuth::parseToken()->refresh();
+
+        return response()->json([
+            'token' => $token,
+        ]);
     }
 }
