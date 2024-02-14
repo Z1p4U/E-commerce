@@ -38,10 +38,7 @@ class AdminController extends Controller
     {
         $profile = Admin::where("id", Auth::id())->latest("id")->get();
 
-        return response()->json([
-            "message" => "Admin Profile",
-            "admin-profile" => $profile
-        ]);
+        return $this->success('Your Profile', $profile);
     }
 
     public function checkAdminProfile($id)
@@ -49,15 +46,10 @@ class AdminController extends Controller
         $admin = Admin::find($id);
 
         if (is_null($admin)) {
-            return response()->json([
-                "error" => "Admin not found"
-            ], 404);
+            return $this->notFound('Admin not found');
         }
 
-        return response()->json([
-            "message" => "Admin",
-            "admin" => $admin
-        ]);
+        return $this->success('Admin Detail', $admin);
     }
 
     public function showUserLists()
@@ -71,18 +63,13 @@ class AdminController extends Controller
 
     public function checkUserProfile($id)
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id);
 
         if (is_null($user)) {
-            return response()->json([
-                "error" => "User not found"
-            ], 404);
+            return $this->notFound("User Not Found");
         }
 
-        return response()->json([
-            "message" => "User",
-            "users" => $user
-        ]);
+        return $this->success('User Info', $user);
     }
 
     public function editUserProfile(EditProfileRequest $request, $id)
@@ -92,22 +79,20 @@ class AdminController extends Controller
         DB::beginTransaction();
 
         try {
-            $user = User::find($id);
-            if (is_null($user)) {
-                return response()->json([
-                    "message" => "User not found"
-                ]);
-            }
+            $user = User::findOrFail($id);
 
             $user->update($payload->toArray());
 
             DB::commit();
 
             return $this->success('User updated successfully', $user);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+
+            return $this->notFound('User not found');;
         } catch (Exception $e) {
             DB::rollback();
 
-            return $e;
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -134,7 +119,7 @@ class AdminController extends Controller
             return response()->json(['error' => $errorMessage], 404);
         } catch (Exception $e) {
             DB::rollback();
-            return $e;
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

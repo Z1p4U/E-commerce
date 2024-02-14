@@ -22,7 +22,6 @@ class VoucherController extends Controller
         DB::beginTransaction();
 
         try {
-
             switch ($type) {
                 case 'monthly':
                     $startDate = Carbon::parse($date)->startOfMonth();
@@ -45,6 +44,7 @@ class VoucherController extends Controller
             $vouchers = Voucher::whereDate('created_at', '>=', $startDate)
                 ->whereDate('created_at', '<=', $endDate)
                 ->latest('id')
+                ->searchQuery()
                 ->sortingQuery()
                 ->paginationQuery();
 
