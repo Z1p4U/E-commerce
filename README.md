@@ -2,6 +2,10 @@
 
 ## API Reference
 
+```http
+npm i && composer install && cp .env.example .env && php artisan key:generate && code .
+```
+
 #### Login (Post)
 
 ```http
