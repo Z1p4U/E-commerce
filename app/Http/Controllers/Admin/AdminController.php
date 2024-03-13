@@ -36,7 +36,7 @@ class AdminController extends Controller
 
     public function adminProfile()
     {
-        $profile = Admin::where("id", Auth::id())->latest("id")->get();
+        $profile = Admin::findOrFail(Auth::id());
 
         return $this->success('Your Profile', $profile);
     }
